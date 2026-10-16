@@ -1,60 +1,31 @@
-# Hack Apertus — project template
+# ApertusVote
+### Multilingual Natural Language Inference over Swiss Voting Booklets
 
-Template repository for [Hack Apertus](https://hackapertus.ch/) submissions.
-Every project keeps almost the same layout, so organizers and judges find the
-same things in the same place.
+ApertusVote is my submission for the OST challenge in Track 2A of the HackApertus Online Hackathon.
 
-## Select your track
+The goal is straightforward: given a claim and a Swiss official voting booklet, determine whether the booklet supports the claim, contradicts it, or does not provide enough information to decide.
 
-This repository holds one example project per track:
+The system uses Apertus-v1.5-8B through the CSCS inference API and retrieves relevant passages from reference text or extracted PDF content to support its prediction.
 
-- `track_1a/`
-- `track_1b/`
-- `track_2a/`
-- `track_2b/`
+## What it does
 
-Keep the directory for the track you are competing in **exactly as it is** —
-don't rename it or move its files — and delete the other track directories.
-That directory is your project root. Keep the files and directories as shown
-below.
+- Classifies claims as entailment, neutral, or contradiction.
+- Retrieves supporting evidence from reference material and voting-booklet PDFs.
+- Preserves page references for PDF evidence when available.
+- Records prediction labels, evidence, token usage, and inference timing.
+- Runs in Docker so the execution environment is reproducible.
 
-## The structure
+### Prediction labels
 
-| Path | What it is |
-| --- | --- |
-| `README.md` | The challenge description and submission requirements for your track |
-| `technical_report.md` | The deeper write-up: architecture, evaluation, limitations |
-| `Makefile` | `make run` must spin up your project |
-| `src/` | Your code |
-| `data/` | Datasets — `track_1a`, `track_2a` and `track_2b` only; max. 100 MB |
-| `findings/` | Issue files — `track_1a` only |
-| `docs/` | Diagrams, notes, longer write-ups |
+| Label | Meaning |
+|---|---|
+| `0` | Entailment — the reference supports the claim |
+| `1` | Neutral — the reference does not establish whether the claim is true |
+| `2` | Contradiction — the reference conflicts with the claim |
 
-## Run it
+## Run the project
 
-Judges run `make run` from the root of the project, on a clean checkout:
+The Track 2A project is kept in `track_2a/`, as required by the challenge template.
 
 ```bash
-make run
-```
-
-`make run` is expected to run the project using Docker, since that
-is how the judges will run it.
-- If you used other local open-weight models, include instructions for running the project in your technical report.
-- Use the following environment variables:
-```
-LLM_NAME — name and version of the model
-LLM_BASE_URL — endpoint base URL
-LLM_API_KEY — your API key
-```
-
-## Getting started
-
-1. Click **Use this template** to create your own repository.
-2. Delete the other track directories. Don't rename or restructure yours.
-3. Read its `README.md` and fill in `technical_report.md`.
-4. Make `make run` work from the root of the project, on a clean checkout.
-
-## License
-
-All Hack Apertus projects are open-sourced. Please check our Terms & Conditions for specific licensing details (6. What you build is open source): https://hackapertus.ch/terms-and-conditions
+cd track_2a
