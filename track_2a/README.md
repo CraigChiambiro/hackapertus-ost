@@ -1,62 +1,63 @@
-# Academia Challenges
+# ApertusVote — Multilingual Voting Claim Verification
 
-Submissions must use the Apertus model family.
-For Track 2 this means that submitted solutions must be built with Apertus. Other open-weights models can be used to support development, e.g. as automatic judges during evaluation. Their role must be clearly described in the submission report.
+**HackApertus Online Hackathon · Track 2A · OST**
 
-💬 In case you have questions, join the conversation on Discord or send an email to “hello@hackapertus.ch”
+I'm building ApertusVote to check claims against Swiss official voting booklets. The idea is simple: give the system a claim and reference material, and it predicts whether the reference supports the claim, contradicts it, or doesn't provide enough information to decide.
 
-## How it works
-Pick from 5 academia challenges provided by Swiss academic institutions:
+The project uses **Apertus-v1.5-8B** through the CSCS inference API. It combines evidence retrieval with model-based classification so that predictions can be accompanied by relevant passages from the source material.
 
-- **FHGR:** AI-Powered Job Interview Coach
-- **OpenParlData:** Extracting Parliamentary Affairs from PDFs into One Common Structure
-- **OST:** Multilingual Natural Language Inference over Swiss Official Voting Booklets
-- **UZH:** Detecting Cross-Lingual Semantic Differences in Swiss Government Websites
-- **ZHAW:** See It, Say It, Pick It: Vision-Language Grounding for a Real Robot Arm
+## What it does
 
-The challenges incl. submission and judging criteria are described in our **Getting Started guide**:
-https://hackapertus.notion.site/getting-started-guide-onlinehack
+- Classifies claims as **entailment**, **neutral**, or **contradiction**.
+- Retrieves relevant passages from reference text and voting-booklet PDFs.
+- Preserves page references for PDF evidence when available.
+- Returns prediction labels, evidence, and available token-usage and inference-time metrics.
+- Runs through Docker using the project's `Makefile`.
+
+## Prediction labels
+
+| Label | Meaning |
+|---|---|
+| `0` | Entailment — the reference supports the claim. |
+| `1` | Neutral — the reference does not establish whether the claim is true. |
+| `2` | Contradiction — the reference conflicts with the claim. |
 
 ## Run it
 
-Keep `track_2a/` as it is: don't rename it or move its files, just delete the
-other track directories.
-
-From the root of the project:
+From the repository root:
 
 ```bash
+cd track_2a
 make run
 ```
 
-Fill in the [Makefile](Makefile) so that it works on a clean checkout. It is
-expected to run the project in a Docker container, since that is how the judges
-will run it, without relying on anything already installed on your machine.
+The project requires Docker and access to the CSCS Apertus inference API. Configure the environment variables documented in `track_2a/README.md` and the technical report. Keep API keys in a local `.env` file; never commit credentials.
 
-Requirements: `runtime, hardware, API keys, model weights`
+## Testing
 
-## Data
-The `data/` directory must not exceed 100 MB.
+I verified that the Docker workflow can call Apertus and produce predictions. Development checks included:
 
+- A single-example live inference test.
+- A 15-example diagnostic run.
+- A 27-example multilingual diagnostic run involving German, French, and Italian claims and references.
+- PDF evidence retrieval and page-reference checks.
 
-## 📦 Submission Requirements & Deliverables
-❗️ Submissions are not handled on Devpost. Submit through our website only:
-http://hackapertus.ch/online-hack/submissions
+These tests demonstrate that the prototype runs, but they are **not official held-out benchmark results**. The diagnostic samples are small, classification errors remain possible, and official held-out evaluation is still pending.
 
-Requirements differ by challenge. See the description of the challenge you are entering for the exact deliverables.
+## Project files
 
+- [`track_2a/src/`](track_2a/src/) — implementation.
+- [`track_2a/data/`](track_2a/data/) — input fixtures and project data.
+- [`track_2a/Dockerfile`](track_2a/Dockerfile) — container setup.
+- [`track_2a/Makefile`](track_2a/Makefile) — run workflow.
+- [`track_2a/technical_report.md`](track_2a/technical_report.md) — technical details, testing, and limitations.
 
-## ⚖️ Judging Criteria
-Judging criteria also differ by challenge. See the respective challenge description.
+## Limitations
 
+Evidence quality depends on PDF extraction and retrieval. Cross-language matching can fail, and a prediction is not necessarily correct just because the system returns evidence. Official held-out benchmark performance has not yet been established.
 
-## Support
+## Licensing
 
-**Licensing requirements**
-Please check our Terms & Conditions (6. What you build is open source):
-https://hackapertus.ch/terms-and-conditions
+Please check the HackApertus terms and the applicable licences for third-party datasets and voting-booklet documents before redistributing those materials.
 
-## FAQ
-💡 https://hackapertus.ch/faq
-
-## Contact
-💬 In case you have questions, join the conversation on Discord or send an email to “hello@hackapertus.ch”
+[HackApertus terms and conditions](https://hackapertus.ch/terms-and-conditions)
